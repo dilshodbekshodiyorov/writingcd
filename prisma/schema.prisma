@@ -48,11 +48,11 @@ model Submission {
   studentId       String
   student         Student   @relation(fields: [studentId], references: [id])
   testId          String
-  test            Test      @relation(fields: [testId], references: [id])
+  // SHU QATORNI O'ZGARTIRASIZ:
+  test            Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
   teacherId       String?
   teacher         Teacher?  @relation(fields: [teacherId], references: [id])
 }
-
 enum Role {
   TEACHER
   ADMIN
