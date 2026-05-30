@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id           String       @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String       @unique
+  passwordHash String
+  createdAt    DateTime     @default(now())
+  submissions  Submission[]
+}
+
+model Teacher {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  role         Role         @default(TEACHER)
+  createdAt    DateTime     @default(now())
+  submissions  Submission[]
+}
+
+model Test {
+  id          String       @id @default(cuid())
+  type        String
+  title       String
+  prompt      String       @db.Text
+  imageUrl    String?
+  createdAt   DateTime     @default(now())
+  submissions Submission[]
+}
+
+model Submission {
+  id              String    @id @default(cuid())
+  text            String    @db.Text
+  submittedAt     DateTime  @default(now())
+  teacherScore    Float?
+  teacherFeedback String?   @db.Text
+  status          Status    @default(PENDING)
+  studentId       String
+  student         Student   @relation(fields: [studentId], references: [id])
+  testId          String
+  test            Test      @relation(fields: [testId], references: [id])
+  teacherId       String?
+  teacher         Teacher?  @relation(fields: [teacherId], references: [id])
+}
+
+enum Role {
+  TEACHER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  APPROVED
+}
